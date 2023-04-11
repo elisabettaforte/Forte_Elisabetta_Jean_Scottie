@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- *
+ * La classe Server représente le serveur qui attend les connexions entrantes et traite les commandes envoyées
+ * par les clients
  */
 public class Server {
 
@@ -24,7 +25,7 @@ public class Server {
     private final ArrayList<EventHandler> handlers;
 
     /**
-     *
+     * Cette méthode est un constructeur qui initialise un objet ServerSocket pour écouter sur le port spécifié et initialise une ArrayList vide pour stocker les gestionnaires d'évènements.
      * @param port
      * @throws IOException
      */
@@ -35,7 +36,7 @@ public class Server {
     }
 
     /**
-     *
+     * Cette méthode ajoute un gestionnaire d'évènements à la liste des gestionnaires d'événements du serveur.
      * @param h
      */
     public void addEventHandler(EventHandler h) {
@@ -43,7 +44,7 @@ public class Server {
     }
 
     /**
-     *
+     * Cette méthode privée appelle la méthode handle() pour chaqye gestionnaire d'événements enregistré avec la commande et l'argument spécifiés.
      * @param cmd
      * @param arg
      */
@@ -54,7 +55,7 @@ public class Server {
     }
 
     /**
-     *
+     * Cette méthode permet d'exécuter une boucle infinie pour attendre les connexions entrantes et traite les commandes reçues.
      */
     public void run() {
         while (true) {
@@ -73,7 +74,8 @@ public class Server {
     }
 
     /**
-     *
+     * Cette méthode permet de lire la commande envoyée par le client et appelle la méthode processCommandLine() pour la traiter.
+     * De plus, cette méthode appelle des cas exceptions qui nous avertir qu'il pourrait avoir des Exceptions.
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -88,7 +90,7 @@ public class Server {
     }
 
     /**
-     *
+     * Cette méthode traite une ligne de commande et la divise en deux parties, soit la commande et l'argument.
      * @param line
      * @return
      */
@@ -100,7 +102,8 @@ public class Server {
     }
 
     /**
-     *
+     * Ceci est une méthode qui ferme les flux de données et la connexion avec le client.
+     * De plus, un avertissement est imprimer avec IOException.
      * @throws IOException
      */
     public void disconnect() throws IOException {
@@ -110,7 +113,7 @@ public class Server {
     }
 
     /**
-     *
+     * Cette méthode traite les commandes spécifiées en appelant les méthodes handleRegistration() ou handleLoadCourses() en fonction de la commande.
      * @param cmd
      * @param arg
      */
