@@ -1,10 +1,9 @@
 package server;
 
 import javafx.util.Pair;
+import server.models.Course;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -133,7 +132,21 @@ public class Server {
      @param arg la session pour laquelle on veut récupérer la liste des cours
      */
     public void handleLoadCourses(String arg) {
-        // TODO: implémenter cette méthode
+        List<Course> courses = new ArrayList<>();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("cours.txt"));
+            String line;
+            while ((line = br.readLine()) != null) {
+                Course course = Course.fromString(line);
+                if (course.getSession().equals(arg)) {
+                    ((ArrayList<?>) courses).add(course);
+                }
+            }
+            br.close();
+            objectOutputStream.writeObject(courses);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
