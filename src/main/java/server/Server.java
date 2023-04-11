@@ -8,7 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import java.util.List;
 /**
  * La classe Server représente le serveur qui attend les connexions entrantes et traite les commandes envoyées
  * par les clients
