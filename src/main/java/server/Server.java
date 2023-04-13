@@ -43,7 +43,7 @@ public class Server {
     }
 
     /**
-     * Cette méthode privée appelle la méthode handle() pour chaqye manipulateur d'événements enregistré avec la commande et l'argument spécifiés.
+     * Cette méthode privée appelle la méthode handle() pour chaque manipulateur d'événements enregistré avec la commande et l'argument spécifiés.
      * @param cmd - paramètre de commande qui est une série de caractères
      * @param arg - paramètre sous forme d'une série de caractères
      */
