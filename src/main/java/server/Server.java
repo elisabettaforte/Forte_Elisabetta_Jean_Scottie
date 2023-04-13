@@ -25,8 +25,8 @@ public class Server {
 
     /**
      * Cette méthode est un constructeur qui initialise un objet ServerSocket pour écouter sur le port spécifié et initialise une ArrayList vide pour stocker les gestionnaires d'évènements.
-     * @param port
-     * @throws IOException
+     * @param port - Ce paramètre permet de crée le serveur sur le port spécifié.
+     * @throws IOException - Il y a une exception qui pourrait être lancé suite au lancement du serveur.
      */
     public Server(int port) throws IOException {
         this.server = new ServerSocket(port, 1);
@@ -35,17 +35,17 @@ public class Server {
     }
 
     /**
-     * Cette méthode ajoute un gestionnaire d'évènements à la liste des gestionnaires d'événements du serveur.
-     * @param h
+     * Cette méthode ajoute un manipulateur d'évènements à la liste des manipulateurs d'événements du serveur.
+     * @param h - manipulateur d'évènements qui se fait ajouter à la liste des manipulateurs d'évènements
      */
     public void addEventHandler(EventHandler h) {
         this.handlers.add(h);
     }
 
     /**
-     * Cette méthode privée appelle la méthode handle() pour chaqye gestionnaire d'événements enregistré avec la commande et l'argument spécifiés.
-     * @param cmd
-     * @param arg
+     * Cette méthode privée appelle la méthode handle() pour chaqye manipulateur d'événements enregistré avec la commande et l'argument spécifiés.
+     * @param cmd - paramètre de commande qui est une série de caractères
+     * @param arg - paramètre sous forme d'une série de caractères
      */
     private void alertHandlers(String cmd, String arg) {
         for (EventHandler h : this.handlers) {
@@ -75,8 +75,8 @@ public class Server {
     /**
      * Cette méthode permet de lire la commande envoyée par le client et appelle la méthode processCommandLine() pour la traiter.
      * De plus, cette méthode appelle des cas exceptions qui nous avertir qu'il pourrait avoir des Exceptions.
-     * @throws IOException
-     * @throws ClassNotFoundException
+     * @throws IOException - avertissement qu'il pourrait avoir une erreur à la sortie
+     * @throws ClassNotFoundException - avertissement que la classe listen() n'existe pas.
      */
     public void listen() throws IOException, ClassNotFoundException {
         String line;
@@ -90,8 +90,8 @@ public class Server {
 
     /**
      * Cette méthode traite une ligne de commande et la divise en deux parties, soit la commande et l'argument.
-     * @param line
-     * @return
+     * @param line - paramètre de caractère nommé line qui correspond à une requête de la ligne de commande.
+     * @return - retourne une nouvelle séquence de paire de commande et d'argument
      */
     public Pair<String, String> processCommandLine(String line) {
         String[] parts = line.split(" ");
@@ -103,7 +103,7 @@ public class Server {
     /**
      * Ceci est une méthode qui ferme les flux de données et la connexion avec le client.
      * De plus, un avertissement est imprimer avec IOException.
-     * @throws IOException
+     * @throws IOException - avertissement qu'il pourrait avoir une erreur à la sortie de ce processus de déconnexion
      */
     public void disconnect() throws IOException {
         objectOutputStream.close();
@@ -113,8 +113,8 @@ public class Server {
 
     /**
      * Cette méthode traite les commandes spécifiées en appelant les méthodes handleRegistration() ou handleLoadCourses() en fonction de la commande.
-     * @param cmd
-     * @param arg
+     * @param cmd - paramètre correspondant à 'Inscrire'
+     * @param arg - liste de cours
      */
     public void handleEvents(String cmd, String arg) {
         if (cmd.equals(REGISTER_COMMAND)) {
