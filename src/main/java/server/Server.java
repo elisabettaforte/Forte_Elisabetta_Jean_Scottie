@@ -137,10 +137,12 @@ public class Server {
             BufferedReader br = new BufferedReader(new FileReader("cours.txt"));
             String line;
             while ((line = br.readLine()) != null) {
-                Course course = Course.fromString(line);
-                if (course.getSession().equals(arg)) {
+                System.out.println(line);
+
+                // Course course = Course.fromString(line);
+                /* if (course.getSession().equals(arg)) {
                     ((ArrayList<?>) courses).add(course);
-                }
+                } */
             }
             br.close();
             objectOutputStream.writeObject(courses);
@@ -155,6 +157,7 @@ public class Server {
      La méthode gére les exceptions si une erreur se produit lors de la lecture de l'objet, l'écriture dans un fichier ou dans le flux de sortie.
      */
     public void handleRegistration() {
+
         // TODO: implémenter cette méthode
     }
 }
