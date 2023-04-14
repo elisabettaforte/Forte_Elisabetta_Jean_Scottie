@@ -9,7 +9,7 @@ import java.net.Socket;
 public class Client {
     public static void main(String[] args) {
         try{
-            Socket server = new Socket(int port)
+            Socket server = new Socket(int port);
             System.out.println("Connecté au serveur");
 
             // Envoyer une requête "charger" au serveur
