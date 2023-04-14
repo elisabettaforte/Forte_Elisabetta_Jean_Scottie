@@ -1,6 +1,7 @@
 package server.models;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Course implements Serializable {
 
@@ -12,6 +13,9 @@ public class Course implements Serializable {
         this.name = name;
         this.code = code;
         this.session = session;
+    }
+
+    public static List<Course> filterBySession(String session) {
     }
 
     public String getName() {
