@@ -2,14 +2,14 @@ package server;
 
 import javafx.util.Pair;
 import server.models.Course;
-import sun.net.www.protocol.file.FileURLConnection;
+import server.models.RegistrationForm;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.*;
+import java.util.List;
 /**
  * La classe Server représente le serveur qui attend les connexions entrantes et traite les commandes envoyées
  * par les clients
@@ -26,8 +26,8 @@ public class Server {
 
     /**
      * Cette méthode est un constructeur qui initialise un objet ServerSocket pour écouter sur le port spécifié et initialise une ArrayList vide pour stocker les gestionnaires d'évènements.
-     * @param port - Ce paramètre permet de crée le serveur sur le port spécifié.
-     * @throws IOException - Il y a une exception qui pourrait être lancé suite au lancement du serveur.
+     * @param port
+     * @throws IOException
      */
     public Server(int port) throws IOException {
         this.server = new ServerSocket(port, 1);
@@ -36,19 +36,19 @@ public class Server {
     }
 
     /**
-     * Cette méthode ajoute un manipulateur d'évènements à la liste des manipulateurs d'événements du serveur.
-     * @param h - manipulateur d'évènements qui se fait ajouter à la liste des manipulateurs d'évènements
+     * Cette méthode ajoute un gestionnaire d'évènements à la liste des gestionnaires d'événements du serveur.
+     * @param h
      */
     public void addEventHandler(EventHandler h) {
         this.handlers.add(h);
     }
 
     /**
-     * Cette méthode privée appelle la méthode handle() pour chaque manipulateur d'événements enregistré avec la commande et l'argument spécifiés.
-     * @param cmd - paramètre de commande qui est une série de caractères
-     * @param arg - paramètre sous forme d'une série de caractères
+     * Cette méthode privée appelle la méthode handle() pour chaqye gestionnaire d'événements enregistré avec la commande et l'argument spécifiés.
+     * @param cmd
+     * @param arg
      */
-    private void alertHandlers(String cmd, String arg) {
+    private void alertHandlers(String cmd, String arg) throws IOException, ClassNotFoundException {
         for (EventHandler h : this.handlers) {
             h.handle(cmd, arg);
         }
@@ -76,8 +76,8 @@ public class Server {
     /**
      * Cette méthode permet de lire la commande envoyée par le client et appelle la méthode processCommandLine() pour la traiter.
      * De plus, cette méthode appelle des cas exceptions qui nous avertir qu'il pourrait avoir des Exceptions.
-     * @throws IOException - avertissement qu'il pourrait avoir une erreur à la sortie
-     * @throws ClassNotFoundException - avertissement que la classe listen() n'existe pas.
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     public void listen() throws IOException, ClassNotFoundException {
         String line;
@@ -91,8 +91,8 @@ public class Server {
 
     /**
      * Cette méthode traite une ligne de commande et la divise en deux parties, soit la commande et l'argument.
-     * @param line - paramètre de caractère nommé line qui correspond à une requête de la ligne de commande.
-     * @return - retourne une nouvelle séquence de paire de commande et d'argument
+     * @param line
+     * @return
      */
     public Pair<String, String> processCommandLine(String line) {
         String[] parts = line.split(" ");
@@ -104,7 +104,7 @@ public class Server {
     /**
      * Ceci est une méthode qui ferme les flux de données et la connexion avec le client.
      * De plus, un avertissement est imprimer avec IOException.
-     * @throws IOException - avertissement qu'il pourrait avoir une erreur à la sortie de ce processus de déconnexion
+     * @throws IOException
      */
     public void disconnect() throws IOException {
         objectOutputStream.close();
@@ -114,10 +114,10 @@ public class Server {
 
     /**
      * Cette méthode traite les commandes spécifiées en appelant les méthodes handleRegistration() ou handleLoadCourses() en fonction de la commande.
-     * @param cmd - paramètre correspondant à 'Inscrire'
-     * @param arg - liste de cours
+     * @param cmd
+     * @param arg
      */
-    public void handleEvents(String cmd, String arg) {
+    public void handleEvents(String cmd, String arg) throws IOException, ClassNotFoundException {
         if (cmd.equals(REGISTER_COMMAND)) {
             handleRegistration();
         } else if (cmd.equals(LOAD_COMMAND)) {
@@ -126,81 +126,60 @@ public class Server {
     }
 
     /**
-     * Lire un fichier texte contenant des informations sur les cours et les transofmer en liste d'objets 'Course'.
-     * La méthode filtre les cours par la session spécifiée en argument.
-     * Ensuite, elle renvoie la liste des cours pour une session au client en utilisant l'objet 'objectOutputStream'.
-     * La méthode gère les exceptions si une erreur se produit lors de la lecture du fichier ou de l'écriture de l'objet dans le flux.
-     *
-     * @param arg la session pour laquelle on veut récupérer la liste des cours
+     Lire un fichier texte contenant des informations sur les cours et les transformer en liste d'objets 'Course'.
+     La méthode filtre les cours par la session spécifiée en argument.
+     Ensuite, elle renvoie la liste des cours pour une session au client en utilisant l'objet 'objectOutputStream'.
+     La méthode gère les exceptions si une erreur se produit lors de la lecture du fichier ou de l'écriture de l'objet dans le flux.
+     @param session la session pour laquelle on veut récupérer la liste des cours
      */
-    public void handleLoadCourses(String arg) {
-        int port = Integer.parseInt(arg[0]);
-        String session = arg[1];
-        try (ServerSocket serverSocket = new ServerSocket(port)){
-            while(true){
-                try(Socket socket = serverSocket.accept()){
-                    List<Course> courses = Course.filterBySession(session);
-                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-                    objectOutputStream.writeObject(courses);
-                    objectOutputStream.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        // List<Course> courses = new ArrayList<>();
-        /*try {
+    public void handleLoadCourses(String session) {
+        try {
+            // Lecture du fichier contenant les informations sur les cours
             BufferedReader br = new BufferedReader(new FileReader("cours.txt"));
             String line;
+            List<Course> courses = new ArrayList<>();
+
+            // Parcours du fichier pour récupérer les cours correspondants à la session spécifiée
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split("\t");
-                if (parts.length == 2 && parts[1].trim().equals(arg)) {
-                    courses.add(new Course(parts[0].trim(), parts[1].trim()));
+                String[] parts = line.split(";");
+                if (parts[2].equals(session)) {
+                    Course course = new Course(parts[0], parts[1], parts[2]);
+                    courses.add(course);
                 }
             }
-
-                // Course course = Course.fromString(line);
-                /* if (course.getSession().equals(arg)) {
-                    ((ArrayList<?>) courses).add(course);
-                } */
-            /*}
             br.close();
+
+            // Envoi de la liste des cours pour la session spécifiée au client
             objectOutputStream.writeObject(courses);
+
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
     }
+
 
     /**
      Récupérer l'objet 'RegistrationForm' envoyé par le client en utilisant 'objectInputStream', l'enregistrer dans un fichier texte
      et renvoyer un message de confirmation au client.
      La méthode gére les exceptions si une erreur se produit lors de la lecture de l'objet, l'écriture dans un fichier ou dans le flux de sortie.
      */
-    public void handleRegistration() {
-        FileURLConnection socket;
-        try{
-            //Récupérer l'objet Registration envoyé par le client en utilisant objectInputStream
-            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-            Registration registrationForm = (Registration) objectInputStream.readObject();
+    public void handleRegistration() throws IOException, ClassNotFoundException {
+        try {
+            // Récupération de l'objet RegistrationForm envoyé par le client
+            RegistrationForm registrationForm = (RegistrationForm) objectInputStream.readObject();
 
-            //Enregistrer l'objet Registration dans un fichier texte
-            FileWriter fileWriter = new FileWriter("inscription.txt");
-            fileWriter.write(registrationForm.toString());
-            fileWriter.close();
+            // Enregistrement de l'objet RegistrationForm dans un fichier texte
+            BufferedWriter bw = new BufferedWriter(new FileWriter("registrations.txt", true)); // true pour ajouter à la fin du fichier
+            bw.write(registrationForm.toString());
+            bw.newLine();
+            bw.close();
 
-            //Renvoyer un message de confirmation au client
-            OutputStream outputStream = socket.getOutputStream();
-            outputStream.write("Incscription réussie!".getBytes());
+            // Envoi d'un message de confirmation au client
+            objectOutputStream.writeObject("Votre inscription a bien été enregistrée.");
+
         } catch (IOException | ClassNotFoundException e) {
-
-            //Gérer les exceptions si une erreur se produit lors de la lecture de lòbjet, l'écriture dans un fichier ou dans le flux de sortie
             e.printStackTrace();
-        } finally {
-            try{
-                socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 }
+
