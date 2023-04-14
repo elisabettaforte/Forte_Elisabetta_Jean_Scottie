@@ -2,6 +2,7 @@ package server;
 
 import javafx.util.Pair;
 import server.models.Course;
+import server.models.RegistrationForm;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -47,7 +48,7 @@ public class Server {
      * @param cmd
      * @param arg
      */
-    private void alertHandlers(String cmd, String arg) {
+    private void alertHandlers(String cmd, String arg) throws IOException, ClassNotFoundException {
         for (EventHandler h : this.handlers) {
             h.handle(cmd, arg);
         }
@@ -116,7 +117,7 @@ public class Server {
      * @param cmd
      * @param arg
      */
-    public void handleEvents(String cmd, String arg) {
+    public void handleEvents(String cmd, String arg) throws IOException, ClassNotFoundException {
         if (cmd.equals(REGISTER_COMMAND)) {
             handleRegistration();
         } else if (cmd.equals(LOAD_COMMAND)) {
@@ -125,37 +126,60 @@ public class Server {
     }
 
     /**
-     Lire un fichier texte contenant des informations sur les cours et les transofmer en liste d'objets 'Course'.
+     Lire un fichier texte contenant des informations sur les cours et les transformer en liste d'objets 'Course'.
      La méthode filtre les cours par la session spécifiée en argument.
      Ensuite, elle renvoie la liste des cours pour une session au client en utilisant l'objet 'objectOutputStream'.
      La méthode gère les exceptions si une erreur se produit lors de la lecture du fichier ou de l'écriture de l'objet dans le flux.
-     @param arg la session pour laquelle on veut récupérer la liste des cours
+     @param session la session pour laquelle on veut récupérer la liste des cours
      */
-    public void handleLoadCourses(String arg) {
-        List<Course> courses = new ArrayList<>();
+    public void handleLoadCourses(String session) {
         try {
+            // Lecture du fichier contenant les informations sur les cours
             BufferedReader br = new BufferedReader(new FileReader("cours.txt"));
             String line;
+            List<Course> courses = new ArrayList<>();
+
+            // Parcours du fichier pour récupérer les cours correspondants à la session spécifiée
             while ((line = br.readLine()) != null) {
-                Course course = Course.fromString(line);
-                if (course.getSession().equals(arg)) {
-                    ((ArrayList<?>) courses).add(course);
+                String[] parts = line.split(";");
+                if (parts[2].equals(session)) {
+                    Course course = new Course(parts[0], parts[1], parts[2]);
+                    courses.add(course);
                 }
             }
             br.close();
+
+            // Envoi de la liste des cours pour la session spécifiée au client
             objectOutputStream.writeObject(courses);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 
     /**
      Récupérer l'objet 'RegistrationForm' envoyé par le client en utilisant 'objectInputStream', l'enregistrer dans un fichier texte
      et renvoyer un message de confirmation au client.
      La méthode gére les exceptions si une erreur se produit lors de la lecture de l'objet, l'écriture dans un fichier ou dans le flux de sortie.
      */
-    public void handleRegistration() {
-        // TODO: implémenter cette méthode
+    public void handleRegistration() throws IOException, ClassNotFoundException {
+        try {
+            // Récupération de l'objet RegistrationForm envoyé par le client
+            RegistrationForm registrationForm = (RegistrationForm) objectInputStream.readObject();
+
+            // Enregistrement de l'objet RegistrationForm dans un fichier texte
+            BufferedWriter bw = new BufferedWriter(new FileWriter("registrations.txt", true)); // true pour ajouter à la fin du fichier
+            bw.write(registrationForm.toString());
+            bw.newLine();
+            bw.close();
+
+            // Envoi d'un message de confirmation au client
+            objectOutputStream.writeObject("Votre inscription a bien été enregistrée.");
+
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }
 
