@@ -113,6 +113,9 @@ public class Client_fx extends Application {
         // Status label
     }
 
+    private void registerCourse() {
+    }
+
     private void registerCourse(String arg) throws IOException, ClassNotFoundException {
         this.objectOutputStream.writeObject(REGISTER_COMMAND + " " + arg);
         String response = (String) this.objectInputStream.readObject();
