@@ -135,13 +135,13 @@ public class Server {
     public void handleLoadCourses(String session) {
         try {
             // Lecture du fichier contenant les informations sur les cours
-            BufferedReader br = new BufferedReader(new FileReader("cours.txt"));
+            BufferedReader br = new BufferedReader(new FileReader("src/main/java/server/data/cours.txt"));
             String line;
             List<Course> courses = new ArrayList<>();
 
             // Parcours du fichier pour récupérer les cours correspondants à la session spécifiée
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split(";");
+                String[] parts = line.split("\t");
                 if (parts[2].equals(session)) {
                     Course course = new Course(parts[0], parts[1], parts[2]);
                     courses.add(course);
