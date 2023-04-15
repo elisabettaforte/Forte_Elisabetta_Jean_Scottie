@@ -64,9 +64,9 @@ public class Server {
                 System.out.println("Connecté au client: " + client);
                 objectInputStream = new ObjectInputStream(client.getInputStream());
                 objectOutputStream = new ObjectOutputStream(client.getOutputStream());
+                System.out.println("Client déconnecté!");
                 listen();
                 disconnect();
-                System.out.println("Client déconnecté!");
             } catch (Exception e) {
                 e.printStackTrace();
             }
