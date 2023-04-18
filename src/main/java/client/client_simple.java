@@ -1,6 +1,7 @@
 package client;
 
 import javafx.util.Pair;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -70,7 +71,7 @@ public class client_simple {
      */
     private void loadCourses() throws IOException, ClassNotFoundException {
         this.objectOutputStream.writeObject(LOAD_COMMAND);
-        String response = (String) this.objectInputStream.readObject();
+        String response = new String(); this.objectInputStream.readObject();
         System.out.println(response);
     }
 
@@ -82,7 +83,8 @@ public class client_simple {
      */
     private void registerCourse(String arg) throws IOException, ClassNotFoundException {
         this.objectOutputStream.writeObject(REGISTER_COMMAND + " " + arg);
-        String response = (String) this.objectInputStream.readObject();
+        String response;
+        response = (String) this.objectInputStream.readObject();
         System.out.println(response);
     }
 
